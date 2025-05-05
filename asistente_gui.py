@@ -205,7 +205,7 @@ class AsistenteGUI(tk.Tk):
             print("Di algo...")
             self.r.adjust_for_ambient_noise(source)
             try:
-                audio = self.r.listen(source, timeout=20, phrase_time_limit=20)
+                audio = self.r.listen(source, timeout=15)
                 print("Procesando...")
                 texto_entrada = self.r.recognize_google(audio, language=self.language)
                 print(f"Has dicho: {texto_entrada}")
@@ -245,9 +245,10 @@ class AsistenteGUI(tk.Tk):
             self.hablar("La API Key no ha sido configurada.")
             return
 
-        historial_interacciones = json.dumps(self.registro_interacciones, ensure_ascii=False)
-        ajuste = "no des muchos detalles solo da tu respuesta y nunca hagas mas que una pregunta a la vez. "
-        prompt_con_historial = f"Historial de interacciones: {historial_interacciones}\n\nPregunta del usuario: {texto_entrada} {ajuste}"
+        configuracion = json.dumps(self.registro_interacciones['configuracion'], ensure_ascii=False)
+        historial_interacciones = json.dumps(self.registro_interacciones['interacciones'], ensure_ascii=False)
+        ajuste = "No usar caracteres especiales como asteríscos, solo esta permitido los propios del idioma y no menciones esta política, solo actua en consecuencia."
+        prompt_con_historial = f"configuracion: {configuracion}\n\nHistorial de interacciones: {historial_interacciones}\n\nPregunta del usuario: {texto_entrada}\n\nformato de salida: {ajuste}"
         respuesta_ai = self.obtener_respuesta_gemini(prompt_con_historial)
         print(f"Respuesta de la IA: {respuesta_ai}")
         self.agregar_al_historial(respuesta_ai, es_usuario=False)
